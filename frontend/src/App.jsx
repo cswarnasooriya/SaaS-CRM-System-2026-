@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Pipeline from './pages/Pipeline';
 import Customers from './pages/Customers';
 import Invoices from './pages/Invoices';
 import CreateInvoice from './pages/CreateInvoice';
@@ -13,16 +14,16 @@ import ProtectedRoute from './components/ProtectedRoute';
 function App() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-      <Toaster position="top-right" /> 
-      
+      <Toaster position="top-right" />
+
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
+
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/customers" element={<Customers />} />
-          
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/invoices/new" element={<CreateInvoice />} />
           <Route path="/invoices/:id" element={<InvoiceDetails />} />

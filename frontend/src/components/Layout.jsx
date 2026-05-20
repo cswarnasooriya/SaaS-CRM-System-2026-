@@ -1,17 +1,17 @@
 import { useContext } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LayoutDashboard, Users, FileText, LogOut, Building2 } from 'lucide-react'; // FileText icon eka add kala
+import { LayoutDashboard, Users, FileText, LogOut, Building2, Kanban } from 'lucide-react';
 
 const Layout = () => {
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
 
-  // Invoices link eka add kala
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Pipeline', path: '/pipeline', icon: Kanban },
     { name: 'Customers', path: '/customers', icon: Users },
-    { name: 'Invoices', path: '/invoices', icon: FileText }, 
+    { name: 'Invoices', path: '/invoices', icon: FileText },
   ];
 
   return (
@@ -27,7 +27,6 @@ const Layout = () => {
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            // Sub-routes walatath (e.g., /invoices/new) active state eka wada karanna includes damma
             const isActive = location.pathname.includes(item.path);
             return (
               <Link
