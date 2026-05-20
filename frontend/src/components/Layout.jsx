@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LayoutDashboard, Users, FileText, LogOut, Building2, Kanban } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, LogOut, Building2, Kanban, Settings as SettingsIcon } from 'lucide-react'; // SettingsIcon add kala
 
 const Layout = () => {
   const { user, logout } = useContext(AuthContext);
@@ -12,6 +12,7 @@ const Layout = () => {
     { name: 'Pipeline', path: '/pipeline', icon: Kanban },
     { name: 'Customers', path: '/customers', icon: Users },
     { name: 'Invoices', path: '/invoices', icon: FileText },
+    { name: 'Settings', path: '/settings', icon: SettingsIcon }, // Aluth link eka
   ];
 
   return (
