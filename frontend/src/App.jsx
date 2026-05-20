@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
+import Register from './pages/Register'; // Aluth Register page eka import kara
 
-// Temporary placeholders
-const Register = () => <div className="p-10 text-2xl font-bold">Register Company</div>;
+// Temporary placeholder for Dashboard
 const Dashboard = () => <div className="p-10 text-2xl font-bold text-primary">SaaS Dashboard</div>;
 
 function App() {
@@ -14,6 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        
         <Route path="*" element={<Login />} />
       </Routes>
     </div>
