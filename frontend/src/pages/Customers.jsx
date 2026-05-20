@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Mail, Phone, X } from 'lucide-react';
+import { Plus, Trash2, Mail, Phone, X, Edit } from 'lucide-react';
 import api from '../services/api';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null); 
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,7 +17,6 @@ const Customers = () => {
     status: 'NEW',
   });
 
-  // Backend eken customers lawa gannawa
   const fetchCustomers = async () => {
     try {
       const { data } = await api.get('/customers');
@@ -35,21 +36,43 @@ const Customers = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Aluth customer kenek add karana function eka
+  const openAddModal = () => {
+    setEditingId(null);
+    setFormData({ firstName: '', lastName: '', email: '', phone: '', status: 'NEW' });
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (customer) => {
+    setEditingId(customer.id);
+    setFormData({
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: customer.email,
+      phone: customer.phone || '',
+      status: customer.status,
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/customers', formData);
-      toast.success('Customer added successfully!');
+      if (editingId) {
+        await api.put(`/customers/${editingId}`, formData);
+        toast.success('Customer updated successfully!');
+      } else {
+        await api.post('/customers', formData);
+        toast.success('Customer added successfully!');
+      }
+      
       setIsModalOpen(false);
-      setFormData({ firstName: '', lastName: '', email: '', phone: '', status: 'NEW' });
-      fetchCustomers(); // Table eka refresh karanawa
+      setEditingId(null);
+      fetchCustomers(); 
     } catch (error) {
-      toast.error('Failed to add customer');
+      toast.error(editingId ? 'Failed to update customer' : 'Failed to add customer');
     }
   };
 
-  // Customer kenek delete karana function eka
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this customer?')) return;
     try {
@@ -61,7 +84,6 @@ const Customers = () => {
     }
   };
 
-  // Status eka anuwa pata wenas karanna podi helper ekak
   const getStatusColor = (status) => {
     switch (status) {
       case 'NEW': return 'bg-blue-100 text-blue-800';
@@ -81,7 +103,7 @@ const Customers = () => {
           <p className="text-sm text-gray-500">Manage your leads and clients</p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openAddModal}
           className="flex items-center bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
         >
           <Plus className="w-5 h-5 mr-2" />
@@ -121,14 +143,27 @@ const Customers = () => {
                         {customer.status}
                       </span>
                     </td>
-                    <td className="p-4 text-right">
+                    
+                    {/* Always Displayed Action Buttons */}
+                    <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                      <button 
+                        onClick={() => openEditModal(customer)}
+                        className="px-3 py-1.5 border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-semibold transition-colors inline-flex items-center shadow-sm"
+                        title="Edit Customer"
+                      >
+                        <Edit className="w-3.5 h-3.5 mr-1" />
+                        Edit
+                      </button>
                       <button 
                         onClick={() => handleDelete(customer.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                        className="px-3 py-1.5 border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold transition-colors inline-flex items-center shadow-sm"
+                        title="Delete Customer"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-3.5 h-3.5 mr-1" />
+                        Delete
                       </button>
                     </td>
+
                   </tr>
                 ))
               )}
@@ -137,12 +172,14 @@ const Customers = () => {
         </div>
       </div>
 
-      {/* Add Customer Modal */}
+      {/* Modal Block */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
             <div className="flex justify-between items-center p-6 border-b border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900">Add New Customer</h3>
+              <h3 className="text-lg font-bold text-gray-900">
+                {editingId ? 'Edit Customer' : 'Add New Customer'}
+              </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
@@ -185,7 +222,7 @@ const Customers = () => {
                   Cancel
                 </button>
                 <button type="submit" className="px-4 py-2 bg-primary text-white hover:bg-blue-700 rounded-lg font-medium transition-colors">
-                  Save Customer
+                  {editingId ? 'Update Customer' : 'Save Customer'}
                 </button>
               </div>
             </form>
