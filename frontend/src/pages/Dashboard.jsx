@@ -1,14 +1,67 @@
-import { useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Users, Activity, DollarSign } from 'lucide-react';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
+  const [statsData, setStatsData] = useState({
+    total: 0,
+    active: 0,
+    revenue: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Customers data backend eken gannawa
+        const { data } = await api.get('/customers');
+        
+        const total = data.length;
+        
+        // 'CONVERTED' nathi okkoma active leads widihata filter karanawa
+        const active = data.filter(c => c.status !== 'CONVERTED').length;
+        
+        // Converted wechcha ekkenekgen $500 ka revenue ekak enawa kiyala assume karanawa (Temporary logic)
+        const convertedCount = data.filter(c => c.status === 'CONVERTED').length;
+        const revenue = convertedCount * 500; 
+
+        setStatsData({ total, active, revenue });
+      } catch (error) {
+        console.error(error);
+        toast.error('Failed to load dashboard stats');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const stats = [
-    { title: 'Total Customers', value: '0', icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
-    { title: 'Active Leads', value: '0', icon: Activity, color: 'text-green-600', bg: 'bg-green-100' },
-    { title: 'Revenue', value: '$0', icon: DollarSign, color: 'text-purple-600', bg: 'bg-purple-100' },
+    { 
+      title: 'Total Customers', 
+      value: isLoading ? '...' : statsData.total, 
+      icon: Users, 
+      color: 'text-blue-600', 
+      bg: 'bg-blue-100' 
+    },
+    { 
+      title: 'Active Leads', 
+      value: isLoading ? '...' : statsData.active, 
+      icon: Activity, 
+      color: 'text-green-600', 
+      bg: 'bg-green-100' 
+    },
+    { 
+      title: 'Est. Revenue', 
+      value: isLoading ? '...' : `$${statsData.revenue.toLocaleString()}`, 
+      icon: DollarSign, 
+      color: 'text-purple-600', 
+      bg: 'bg-purple-100' 
+    },
   ];
 
   return (
@@ -24,7 +77,7 @@ const Dashboard = () => {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
+            <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center transition-all hover:shadow-md">
               <div className={`p-4 rounded-full ${stat.bg} mr-4`}>
                 <Icon className={`w-6 h-6 ${stat.color}`} />
               </div>
