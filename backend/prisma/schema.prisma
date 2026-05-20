@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// SaaS eke inna Companies (Tenants)
 model Company {
   id        String     @id @default(uuid())
   name      String
@@ -15,13 +14,12 @@ model Company {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   
-  // Relations
   users     User[]
   customers Customer[]
-  invoices  Invoice[]  // Aluthen add kala
+  invoices  Invoice[]
+  tasks     Task[]     // Aluthen add kala
 }
 
-// System eka use karana Users (Admins, Sales Reps)
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -31,12 +29,12 @@ model User {
   
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tasks     Task[]   // Aluthen add kala
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// CRM eke inna Clients/Leads
 model Customer {
   id        String     @id @default(uuid())
   firstName String
@@ -47,15 +45,12 @@ model Customer {
   
   companyId String
   company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  invoices  Invoice[]  // Aluthen add kala
+  invoices  Invoice[]
+  tasks     Task[]     // Aluthen add kala
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
-
-// ==========================================
-// ALUTH: Invoices Module Schema
-// ==========================================
 
 model Invoice {
   id            String        @id @default(uuid())
@@ -69,7 +64,6 @@ model Invoice {
   totalAmount   Float         @default(0)
   notes         String?       @db.Text
 
-  // Multi-tenant & Customer relations
   companyId     String
   company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
@@ -81,7 +75,7 @@ model Invoice {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  @@unique([invoiceNumber, companyId]) // Eka company ekakata eka invoice number eka ekaparai thiyenna puluwan
+  @@unique([invoiceNumber, companyId])
 }
 
 model InvoiceItem {
@@ -93,6 +87,29 @@ model InvoiceItem {
 
   invoiceId   String
   invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// ALUTH: Tasks & Reminders Schema
+// ==========================================
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String?    @db.Text
+  dueDate     DateTime
+  status      TaskStatus @default(PENDING)
+
+  companyId   String
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  customerId  String?
+  customer    Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 enum Role {
@@ -113,4 +130,9 @@ enum InvoiceStatus {
   SENT
   PAID
   OVERDUE
+}
+
+enum TaskStatus {
+  PENDING
+  COMPLETED
 }

@@ -6,7 +6,8 @@ import morgan from 'morgan';
 import authRoutes from './routes/authRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
-import teamRoutes from './routes/teamRoutes.js'; // Aluth Team route eka
+import teamRoutes from './routes/teamRoutes.js';
+import taskRoutes from './routes/taskRoutes.js'; // Aluth eka
 
 const app = express();
 
@@ -15,11 +16,11 @@ app.use(cors());
 app.use(helmet()); 
 app.use(morgan('dev')); 
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/invoices', invoiceRoutes);
-app.use('/api/team', teamRoutes); // Route eka mount kala
+app.use('/api/team', teamRoutes);
+app.use('/api/tasks', taskRoutes); // Mount kala
 
 app.get('/', (req, res) => {
   res.status(200).json({ status: 'success', message: 'SaaS CRM API App is running perfectly!' });
