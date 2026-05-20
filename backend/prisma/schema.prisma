@@ -15,8 +15,10 @@ model Company {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   
+  // Relations
   users     User[]
   customers Customer[]
+  invoices  Invoice[]  // Aluthen add kala
 }
 
 // System eka use karana Users (Admins, Sales Reps)
@@ -45,9 +47,52 @@ model Customer {
   
   companyId String
   company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices  Invoice[]  // Aluthen add kala
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+}
+
+// ==========================================
+// ALUTH: Invoices Module Schema
+// ==========================================
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  status        InvoiceStatus @default(DRAFT)
+  
+  subTotal      Float         @default(0)
+  taxRate       Float         @default(0)
+  totalAmount   Float         @default(0)
+  notes         String?       @db.Text
+
+  // Multi-tenant & Customer relations
+  companyId     String
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  items         InvoiceItem[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([invoiceNumber, companyId]) // Eka company ekakata eka invoice number eka ekaparai thiyenna puluwan
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float
+  total       Float
+
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -61,4 +106,11 @@ enum LeadStatus {
   CONTACTED
   QUALIFIED
   CONVERTED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
 }

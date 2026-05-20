@@ -3,7 +3,10 @@ import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Customers from './pages/Customers'; // Aluth file eka import kara
+import Customers from './pages/Customers';
+import Invoices from './pages/Invoices';
+import CreateInvoice from './pages/CreateInvoice';
+import InvoiceDetails from './pages/InvoiceDetails';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -13,17 +16,18 @@ function App() {
       <Toaster position="top-right" /> 
       
       <Routes>
-        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/* Protected Routes with Layout */}
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />
+          
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/invoices/new" element={<CreateInvoice />} />
+          <Route path="/invoices/:id" element={<InvoiceDetails />} />
         </Route>
 
-        {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
