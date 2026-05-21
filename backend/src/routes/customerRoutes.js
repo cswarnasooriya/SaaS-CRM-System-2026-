@@ -1,27 +1,28 @@
-// backend/src/routes/customerRoutes.js
 import express from 'express';
-import {
-  createCustomer,
-  getCustomers,
-  getCustomerById,
-  updateCustomer,
+import { 
+  getCustomers, 
+  createCustomer, 
+  updateCustomer, 
   deleteCustomer,
+  getCustomerById, 
+  addNote
 } from '../controllers/customerController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Okkoma routes walata protect middleware eka apply karanawa
-router.use(protect); 
+router.use(protect);
 
-// Routes define kirima
 router.route('/')
-  .post(createCustomer)
-  .get(getCustomers);
+  .get(getCustomers)
+  .post(createCustomer);
 
 router.route('/:id')
-  .get(getCustomerById)
+  .get(getCustomerById) 
   .put(updateCustomer)
   .delete(deleteCustomer);
+
+router.route('/:id/notes')
+  .post(addNote); 
 
 export default router;

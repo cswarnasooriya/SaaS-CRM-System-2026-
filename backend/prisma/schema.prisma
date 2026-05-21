@@ -17,7 +17,8 @@ model Company {
   users     User[]
   customers Customer[]
   invoices  Invoice[]
-  tasks     Task[]     // Aluthen add kala
+  tasks     Task[]
+  notes     Note[]     // Aluthen add kala
 }
 
 model User {
@@ -29,7 +30,8 @@ model User {
   
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  tasks     Task[]   // Aluthen add kala
+  tasks     Task[]
+  notes     Note[]   // Aluthen add kala
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,7 +48,8 @@ model Customer {
   companyId String
   company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   invoices  Invoice[]
-  tasks     Task[]     // Aluthen add kala
+  tasks     Task[]
+  notes     Note[]     // Aluthen add kala
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -89,9 +92,6 @@ model InvoiceItem {
   invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
-// ==========================================
-// ALUTH: Tasks & Reminders Schema
-// ==========================================
 model Task {
   id          String     @id @default(uuid())
   title       String
@@ -110,6 +110,26 @@ model Task {
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+}
+
+// ==========================================
+// ALUTH: Internal Notes Schema
+// ==========================================
+model Note {
+  id          String   @id @default(uuid())
+  content     String   @db.Text
+
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum Role {
