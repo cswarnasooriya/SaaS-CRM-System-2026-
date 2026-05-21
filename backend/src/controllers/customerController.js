@@ -49,7 +49,7 @@ export const deleteCustomer = async (req, res) => {
   }
 };
 
-// ALUTH: 360 View ekata full customer details aran denawa
+// 360 View ekata full customer details, notes, tasks, and invoices aran denawa
 export const getCustomerById = async (req, res) => {
   try {
     const customer = await prisma.customer.findFirst({
@@ -79,10 +79,14 @@ export const getCustomerById = async (req, res) => {
   }
 };
 
-// ALUTH: Add Note
+// NOTE SAVE KIRIMA (FIXED)
 export const addNote = async (req, res) => {
   try {
     const { content } = req.body;
+    if (!content) {
+      return res.status(400).json({ message: 'Note content is required' });
+    }
+
     const note = await prisma.note.create({
       data: {
         content,
@@ -96,6 +100,32 @@ export const addNote = async (req, res) => {
     });
     res.status(201).json(note);
   } catch (error) {
+    console.error('Add Note Error:', error);
     res.status(500).json({ message: 'Error adding note' });
+  }
+};
+
+// CUSTOMER PROFILE EKENMA TASK ASSIGN KIRIMA (ALUTH)
+export const addCustomerTask = async (req, res) => {
+  try {
+    const { title, description, dueDate } = req.body;
+    if (!title || !dueDate) {
+      return res.status(400).json({ message: 'Title and due date are required' });
+    }
+
+    const task = await prisma.task.create({
+      data: {
+        title,
+        description,
+        dueDate: new Date(dueDate),
+        customerId: req.params.id,
+        userId: req.user.id,
+        companyId: req.user.companyId
+      }
+    });
+    res.status(201).json(task);
+  } catch (error) {
+    console.error('Add Customer Task Error:', error);
+    res.status(500).json({ message: 'Error adding task' });
   }
 };

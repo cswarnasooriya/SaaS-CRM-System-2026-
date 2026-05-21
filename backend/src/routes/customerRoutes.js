@@ -4,8 +4,9 @@ import {
   createCustomer, 
   updateCustomer, 
   deleteCustomer,
-  getCustomerById, 
-  addNote
+  getCustomerById,
+  addNote,
+  addCustomerTask // Aluth endpoint eka import kala
 } from '../controllers/customerController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -18,11 +19,14 @@ router.route('/')
   .post(createCustomer);
 
 router.route('/:id')
-  .get(getCustomerById) 
+  .get(getCustomerById)
   .put(updateCustomer)
   .delete(deleteCustomer);
 
 router.route('/:id/notes')
   .post(addNote); 
+
+router.route('/:id/tasks')
+  .post(addCustomerTask); 
 
 export default router;

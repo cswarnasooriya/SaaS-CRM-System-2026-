@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Pipeline from './pages/Pipeline';
 import Tasks from './pages/Tasks';
 import Customers from './pages/Customers';
+import CustomerDetails from './pages/CustomerDetails'; // Import eka
 import Invoices from './pages/Invoices';
 import CreateInvoice from './pages/CreateInvoice';
 import InvoiceDetails from './pages/InvoiceDetails';
@@ -26,7 +27,10 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/tasks" element={<Tasks />} />
+          
           <Route path="/customers" element={<Customers />} />
+          <Route path="/customers/:id" element={<CustomerDetails />} /> {/* Aluth Route */}
+          
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/invoices/new" element={<CreateInvoice />} />
           <Route path="/invoices/:id" element={<InvoiceDetails />} />

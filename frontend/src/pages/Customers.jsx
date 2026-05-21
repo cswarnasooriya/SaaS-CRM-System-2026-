@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Mail, Phone, X, Edit } from 'lucide-react';
+import { Plus, Trash2, Mail, Phone, X, Edit, Eye } from 'lucide-react'; // Eye icon added
 import api from '../services/api';
 
 const Customers = () => {
@@ -8,6 +9,7 @@ const Customers = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null); 
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -96,7 +98,6 @@ const Customers = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Section */}
       <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div>
           <h2 className="text-xl font-bold text-gray-800">Customers Directory</h2>
@@ -111,7 +112,6 @@ const Customers = () => {
         </button>
       </div>
 
-      {/* Data Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -144,8 +144,16 @@ const Customers = () => {
                       </span>
                     </td>
                     
-                    {/* Always Displayed Action Buttons */}
                     <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                      {/* Aluth View Profile Button eka */}
+                      <button 
+                        onClick={() => navigate(`/customers/${customer.id}`)}
+                        className="px-3 py-1.5 border border-purple-200 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-lg text-xs font-semibold transition-colors inline-flex items-center shadow-sm"
+                        title="View Profile"
+                      >
+                        <Eye className="w-3.5 h-3.5 mr-1" />
+                        View
+                      </button>
                       <button 
                         onClick={() => openEditModal(customer)}
                         className="px-3 py-1.5 border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-semibold transition-colors inline-flex items-center shadow-sm"
@@ -172,7 +180,6 @@ const Customers = () => {
         </div>
       </div>
 
-      {/* Modal Block */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
