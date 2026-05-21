@@ -18,7 +18,7 @@ model Company {
   customers Customer[]
   invoices  Invoice[]
   tasks     Task[]
-  notes     Note[]     // Aluthen add kala
+  notes     Note[]
 }
 
 model User {
@@ -31,7 +31,7 @@ model User {
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   tasks     Task[]
-  notes     Note[]   // Aluthen add kala
+  notes     Note[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,7 +49,7 @@ model Customer {
   company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   invoices  Invoice[]
   tasks     Task[]
-  notes     Note[]     // Aluthen add kala
+  notes     Note[]
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -97,7 +97,7 @@ model Task {
   title       String
   description String?    @db.Text
   dueDate     DateTime
-  status      TaskStatus @default(PENDING)
+  status      TaskStatus @default(TODO) // Default eka TODO kala
 
   companyId   String
   company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -112,9 +112,6 @@ model Task {
   updatedAt   DateTime   @updatedAt
 }
 
-// ==========================================
-// ALUTH: Internal Notes Schema
-// ==========================================
 model Note {
   id          String   @id @default(uuid())
   content     String   @db.Text
@@ -152,7 +149,10 @@ enum InvoiceStatus {
   OVERDUE
 }
 
+// PREMIUM STAGES FOR PRODUCTION TASK TRACKING
 enum TaskStatus {
-  PENDING
+  TODO
+  IN_PROGRESS
+  REVIEW
   COMPLETED
 }
