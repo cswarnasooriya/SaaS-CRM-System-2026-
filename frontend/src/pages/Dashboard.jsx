@@ -31,14 +31,14 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const [customersRes, invoicesRes, tasksRes] = await Promise.all([
-          api.get('/customers'),
-          api.get('/invoices'),
-          api.get('/tasks')
+          api.get('/customers').catch(() => ({ data: [] })),
+          api.get('/invoices').catch(() => ({ data: [] })),
+          api.get('/tasks').catch(() => ({ data: [] }))
         ]);
         
-        const customers = customersRes.data;
-        const invoices = invoicesRes.data;
-        const tasks = tasksRes.data;
+        const customers = customersRes.data || [];
+        const invoices = invoicesRes.data || [];
+        const tasks = tasksRes.data || [];
         
         const total = customers.length;
         const active = customers.filter(c => c.status !== 'CONVERTED').length;
@@ -49,7 +49,9 @@ const Dashboard = () => {
 
         setStatsData({ total, active, revenue, conversionRate });
 
-        setRecentTasks(tasks.filter(t => t.status === 'PENDING').slice(0, 3));
+        // FIXED: PENDING wenuwata COMPLETED nathi anith okkoma open active agile tasks gannawa
+        const activeTasks = tasks.filter(t => t.status !== 'COMPLETED');
+        setRecentTasks(activeTasks.slice(0, 3));
         setRecentCustomers(customers.slice(0, 3));
 
         const statusCounts = { NEW: 0, CONTACTED: 0, QUALIFIED: 0, CONVERTED: 0 };
@@ -184,7 +186,6 @@ const Dashboard = () => {
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
                   <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} allowDecimals={false} />
                   <Tooltip cursor={{fill: '#f3f4f6'}} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
-                  {/* Error එක ආපු radius attribute එක සම්පූර්ණයෙන්ම අයින් කලා */}
                   <Bar dataKey="count" fill="#9333EA" />
                 </BarChart>
               </ResponsiveContainer>
@@ -201,7 +202,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-md font-bold text-gray-800 flex items-center">
                 <CheckSquare className="w-5 h-5 mr-2 text-yellow-500" />
-                Action Required (Pending Tasks)
+                Action Required (Active Tasks)
               </h3>
               <Link to="/tasks" className="text-xs text-blue-600 hover:underline flex items-center font-semibold">
                 Go to Tasks <ArrowRight className="w-3 h-3 ml-1" />
@@ -218,9 +219,9 @@ const Dashboard = () => {
                   <div key={task.id} className="p-3 bg-gray-50 rounded-lg border border-gray-100 flex justify-between items-center text-sm">
                     <div>
                       <p className="font-bold text-gray-800">{task.title}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">Due Date: {new Date(task.dueDate).toLocaleDateString()}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">Stage: <span className="text-blue-600 font-semibold">{task.status}</span> | Due: {new Date(task.dueDate).toLocaleDateString()}</p>
                     </div>
-                    <span className="text-xs font-semibold px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">Pending</span>
+                    <span className="text-xs font-semibold px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">Active</span>
                   </div>
                 ))
               )}
